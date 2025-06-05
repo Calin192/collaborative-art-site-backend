@@ -1,5 +1,6 @@
 package org.example.service;
 
+import org.example.domain.Tree;
 import org.example.repo.DrawingRepo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -18,6 +19,14 @@ public class DrawingService {
     }
 
     public ResponseEntity<Map<String, String>> getAllImages() {
-        return drawingRepo.getAllImages();
+        return drawingRepo.getAllImagesFromJsonRoots();
+    }
+
+    public ResponseEntity<Map<String, String>> getImagesFromRoot(@RequestParam String rootPath) {
+        return drawingRepo.getImagesFromRoot(rootPath);
+    }
+
+    public ResponseEntity<Tree> getTreeStructure(@RequestParam String rootPath) {
+        return drawingRepo.getTreeStructure(rootPath);
     }
 }

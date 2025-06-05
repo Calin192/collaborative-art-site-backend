@@ -8,29 +8,49 @@ public class Tree {
     private Drawing drawing;
     private List<Tree> children;
 
+    // Constructor fără parametri - obligatoriu pentru Jackson
+    public Tree() {
+        this.children = new ArrayList<>();
+        this.drawing = null;
+    }
+
+    // Constructor cu parametru path, dacă vrei să-l păstrezi
     public Tree(String path) {
         this.path = path;
-        this.drawing = null; // Initialize drawing as null
+        this.drawing = null;
         this.children = new ArrayList<>();
     }
 
-    public void addChild(Tree child) {
-        children.add(child);
-    }
-
+    // Getter și setter pentru path
     public String getPath() {
         return path;
     }
 
+    public void setPath(String path) {
+        this.path = path;
+    }
+
+    // Getter și setter pentru drawing
+    public Drawing getDrawing() {
+        return drawing;
+    }
+
+    public void setDrawing(Drawing drawing) {
+        this.drawing = drawing;
+    }
+
+    // Getter și setter pentru children
     public List<Tree> getChildren() {
         return children;
     }
 
-    public Drawing getDrawing() {
-        return drawing;
+    public void setChildren(List<Tree> children) {
+        this.children = children;
     }
-    public void setDrawing(Drawing drawing) {
-        this.drawing = drawing;
+
+    // Metoda addChild rămâne opțională
+    public void addChild(Tree child) {
+        children.add(child);
     }
 
     public void printTree(String indent) {

@@ -1,5 +1,8 @@
 package org.example.repo;
 
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import org.example.domain.Tree;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Repository;
@@ -12,6 +15,7 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Base64;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import static org.example.utils.AssetsUtils.countImagesInAssets;
@@ -41,30 +45,112 @@ public class DrawingRepo {
     }
 
     //getting all images
-    public ResponseEntity<Map<String, String>> getAllImages() {
+    public ResponseEntity<Map<String, String>> getAllImagesFromJsonRoots() {
         try {
-            Path assetsPath = Paths.get("C:\\a.Programming\\Anul_3\\Licenta\\Proiect\\Backend\\Java_part_1\\src\\main\\resources\\assets");
+            // Citește JSON-ul cu arborele (presupunem calea fișierului)
+            Path jsonPath = Paths.get("drawings.json");
+            ObjectMapper mapper = new ObjectMapper();
+
+            // Deserializează JSON-ul într-o listă de Tree (root nodes)
+            List<Tree> roots = mapper.readValue(jsonPath.toFile(), new TypeReference<List<Tree>>() {});
+
             Map<String, String> images = new HashMap<>();
 
-            Files.list(assetsPath)
-                    .filter(Files::isRegularFile)
-                    .filter(file -> {
-                        String fileName = file.getFileName().toString().toLowerCase();
-                        return fileName.endsWith(".png") || fileName.endsWith(".jpg") || fileName.endsWith(".jpeg");
-                    })
-                    .forEach(file -> {
-                        try {
-                            byte[] fileBytes = Files.readAllBytes(file);
-                            String base64Image = Base64.getEncoder().encodeToString(fileBytes);
-                            images.put(file.getFileName().toString(), base64Image);
-                        } catch (IOException e) {
-                            e.printStackTrace();
-                        }
-                    });
+            // Pentru fiecare nod root, încarcă imaginea aferentă (presupunem că path-ul este numele imaginii)
+            for (Tree root : roots) {
+                String imagePathStr = "src/main/resources/assets/" + root.getPath();
+                Path imagePath = Paths.get(imagePathStr);
+
+                if (Files.exists(imagePath) && Files.isRegularFile(imagePath)) {
+                    byte[] bytes = Files.readAllBytes(imagePath);
+                    String base64 = Base64.getEncoder().encodeToString(bytes);
+                    images.put(root.getPath(), base64);
+                }
+            }
 
             return ResponseEntity.ok(images);
         } catch (IOException e) {
+            e.printStackTrace();
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null);
         }
     }
+
+
+    public Map<String, String> getImagesFromSelectedRoot(Tree selectedRoot) {
+        Map<String, String> images = new HashMap<>();
+        try {
+            collectImages(selectedRoot, images);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return images;
+    }
+
+    // Funcția recursivă folosită anterior
+    private void collectImages(Tree node, Map<String, String> images) throws IOException {
+        Path imagePath = Paths.get("src/main/resources/assets/", node.getPath());
+        if (Files.exists(imagePath) && Files.isRegularFile(imagePath)) {
+            byte[] bytes = Files.readAllBytes(imagePath);
+            String base64 = Base64.getEncoder().encodeToString(bytes);
+            images.put(node.getPath(), base64);
+        }
+        for (Tree child : node.getChildren()) {
+            collectImages(child, images);
+        }
+    }
+
+
+    public ResponseEntity<Map<String, String>> getImagesFromRoot(@RequestParam String rootPath) {
+        try {
+
+            // 1. Încarcă toate rădăcinile din JSON
+            Path jsonPath = Paths.get("drawings.json");
+            ObjectMapper mapper = new ObjectMapper();
+            List<Tree> roots = mapper.readValue(jsonPath.toFile(), new TypeReference<List<Tree>>() {});
+
+            // 2. Găsește root-ul cu path-ul specificat
+            Tree selectedRoot = roots.stream()
+                    .filter(root -> root.getPath().equals(rootPath))
+                    .findFirst()
+                    .orElse(null);
+
+            if (selectedRoot == null) {
+                return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
+            }
+
+            // 3. Parcurge arborele și extrage imaginile
+            Map<String, String> images = new HashMap<>();
+            collectImages(selectedRoot, images);
+
+            return ResponseEntity.ok(images);
+        } catch (IOException e) {
+            e.printStackTrace();
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null);
+        }
+    }
+
+
+    public ResponseEntity<Tree> getTreeStructure(@RequestParam String rootPath) {
+        try {
+            Path jsonPath = Paths.get("drawings.json");
+            ObjectMapper mapper = new ObjectMapper();
+            List<Tree> roots = mapper.readValue(jsonPath.toFile(), new TypeReference<List<Tree>>() {});
+
+            Tree selectedRoot = roots.stream()
+                    .filter(root -> root.getPath().equals(rootPath))
+                    .findFirst()
+                    .orElse(null);
+
+            if (selectedRoot == null) {
+                return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
+            }
+
+            return ResponseEntity.ok(selectedRoot);
+
+        } catch (IOException e) {
+            e.printStackTrace();
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null);
+        }
+    }
+
 }

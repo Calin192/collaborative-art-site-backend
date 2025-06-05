@@ -1,5 +1,6 @@
 package org.example.controller;
 
+import org.example.domain.Tree;
 import org.example.service.DrawingService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -24,5 +25,16 @@ public class DrawingController {
     public ResponseEntity<Map<String, String>> getAllImages() {
         return drawingService.getAllImages();
     }
+
+    @GetMapping("/getImagesFromRoot")
+    public ResponseEntity<Map<String, String>> getImagesFromRoot(@RequestParam String rootPath) {
+        return drawingService.getImagesFromRoot(rootPath);
+    }
+
+    @GetMapping("/getTreeStructure")
+    public ResponseEntity<Tree> getTreeStructure(@RequestParam String rootPath) {
+        return drawingService.getTreeStructure(rootPath);
+    }
+
 
 }

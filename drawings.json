@@ -6,7 +6,31 @@
       "username": "frank",
       "description": ""
     },
-    "children": []
+    "children": [{
+      "path": "image6.png",
+      "drawing": {
+        "name": "Sunset View",
+        "username": "alice",
+        "description": "A beautiful sunset over the hills"
+      },
+      "children": [{
+        "path": "image8.png",
+        "drawing": {
+          "name": "Sunset View",
+          "username": "alice",
+          "description": "A beautiful sunset over the hills"
+        },
+        "children": []
+      }]
+    },{
+      "path": "image7.png",
+      "drawing": {
+        "name": "Sunset View",
+        "username": "alice",
+        "description": "A beautiful sunset over the hills"
+      },
+      "children": []
+    }]
   },
   {
     "path": "image1.png",
@@ -52,6 +76,5 @@
       "description": ""
     },
     "children": []
-  },
-
+  }
 ]
