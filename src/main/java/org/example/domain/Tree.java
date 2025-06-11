@@ -8,13 +8,12 @@ public class Tree {
     private Drawing drawing;
     private List<Tree> children;
 
-    // Constructor fără parametri - obligatoriu pentru Jackson
+    // Constructor fara parametri - obligatoriu pentru JSON
     public Tree() {
         this.children = new ArrayList<>();
         this.drawing = null;
     }
 
-    // Constructor cu parametru path, dacă vrei să-l păstrezi
     public Tree(String path) {
         this.path = path;
         this.drawing = null;

@@ -103,12 +103,12 @@ public class DrawingRepo {
     public ResponseEntity<Map<String, String>> getImagesFromRoot(@RequestParam String rootPath) {
         try {
 
-            // 1. Încarcă toate rădăcinile din JSON
+            // 1. Încarca toate radacinile din JSON
             Path jsonPath = Paths.get("drawings.json");
             ObjectMapper mapper = new ObjectMapper();
             List<Tree> roots = mapper.readValue(jsonPath.toFile(), new TypeReference<List<Tree>>() {});
 
-            // 2. Găsește root-ul cu path-ul specificat
+            // 2. Gaseste root-ul cu path-ul specificat
             Tree selectedRoot = roots.stream()
                     .filter(root -> root.getPath().equals(rootPath))
                     .findFirst()
@@ -118,7 +118,7 @@ public class DrawingRepo {
                 return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
             }
 
-            // 3. Parcurge arborele și extrage imaginile
+            // 3. Parcurge arborele si extrage imaginile
             Map<String, String> images = new HashMap<>();
             collectImages(selectedRoot, images);
 

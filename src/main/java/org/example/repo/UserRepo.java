@@ -14,6 +14,7 @@ public class UserRepo {
     private static final String FILE_PATH = "users.json";
     private final ObjectMapper objectMapper = new ObjectMapper();
 
+
     public List<User> getUsers() {
         try {
             File file = new File(FILE_PATH);
@@ -34,8 +35,4 @@ public class UserRepo {
             e.printStackTrace();
         }
     }
-
-
-
-
 }
