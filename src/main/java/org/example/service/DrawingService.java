@@ -14,8 +14,8 @@ import java.util.Map;
 public class DrawingService {
     @Autowired
     private DrawingRepo drawingRepo;
-    public ResponseEntity<String> uploadImage(@RequestParam("image") MultipartFile file) {
-        return drawingRepo.add(file);
+    public ResponseEntity<String> uploadImage(@RequestParam("image") MultipartFile file, @RequestParam String parentPath) {
+        return drawingRepo.add(file,parentPath);
     }
 
     public ResponseEntity<Map<String, String>> getAllImages() {

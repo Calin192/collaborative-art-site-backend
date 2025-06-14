@@ -33,11 +33,14 @@ public class DrawingControllerTest {
     public void testUploadImage() throws Exception {
         MockMultipartFile file = new MockMultipartFile("image", "test.png", "image/png", "dummy content".getBytes());
 
-        Mockito.when(drawingService.uploadImage(any())).thenReturn(ResponseEntity.ok("Success"));
+        Mockito.when(drawingService.uploadImage(Mockito.any(), Mockito.anyString()))
+                .thenReturn(ResponseEntity.ok("Image uploaded successfully"));
 
-        mockMvc.perform(multipart("/upload").file(file))
+        mockMvc.perform(multipart("/upload")
+                        .file(file)
+                        .param("parentPath", "some/parent/path"))
                 .andExpect(status().isOk())
-                .andExpect(content().string("Success"));
+                .andExpect(content().string("Image uploaded successfully"));
     }
 
     @Test

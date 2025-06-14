@@ -2,6 +2,7 @@ package org.example.repo;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import org.example.domain.Drawing;
 import org.example.domain.Tree;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -13,50 +14,122 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.Base64;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 import static org.example.utils.AssetsUtils.countImagesInAssets;
 
 @Repository
 public class DrawingRepo {
 
-    public ResponseEntity<String> add(@RequestParam("image") MultipartFile file) {
+
+    public ResponseEntity<String> add(
+            @RequestParam("image") MultipartFile file,
+            @RequestParam("parentPath") String parentPath) {
+
+        System.out.println("ParentPath primit: " + parentPath);
+
         try {
             long nr = countImagesInAssets();
 
             String filename = null;
             String originalFilename = file.getOriginalFilename();
-            if(originalFilename!=null){
+            if (originalFilename != null) {
                 String extension = originalFilename.substring(originalFilename.lastIndexOf('.'));
                 String baseName = originalFilename.substring(0, originalFilename.lastIndexOf('.'));
                 filename = baseName + nr + extension;
             }
-            // Save the image to the specified path
-            Path filepath = Paths.get("C:\\a.Programming\\Anul_3\\Licenta\\Proiect\\Backend\\Java_part_1\\src\\main\\resources\\assets", filename);
+
+            if (parentPath != null && (parentPath.contains("..") || parentPath.contains(":") || parentPath.contains("\\"))) {
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Invalid parent path");
+            }
+
+            // Salvează în folderul assets, NU în funcție de parentPath-ul logic
+            Path filepath = Paths.get(
+                    "C:\\a.Programming\\Anul_3\\Licenta\\Proiect\\Backend\\Java_part_1\\src\\main\\resources\\assets",
+                    filename);
             Files.createDirectories(filepath.getParent());
             Files.write(filepath, file.getBytes());
+
+            // Construiește obiectul drawing
+            Drawing drawing = new Drawing("Image Name", "Username", "Description");
+
+            // Încarcă arborele JSON
+            Path jsonFilePath = Paths.get("C:\\a.Programming\\Anul_3\\Licenta\\Proiect\\Backend\\Java_part_1\\drawings.json");
+            ObjectMapper objectMapper = new ObjectMapper();
+            List<Tree> trees = new ArrayList<>();
+            if (Files.exists(jsonFilePath) && Files.size(jsonFilePath) > 0) {
+                trees = objectMapper.readValue(
+                        jsonFilePath.toFile(),
+                        objectMapper.getTypeFactory().constructCollectionType(List.class, Tree.class)
+                );
+            } else {
+                trees = new ArrayList<>();
+            }
+
+            // Creează nodul nou
+            Tree newNode = new Tree(filename);
+            newNode.setDrawing(drawing);
+
+            // Caută nodul părinte în arbore
+            if (parentPath != null && !parentPath.isEmpty()) {
+                String[] pathParts = parentPath.split("/");
+                String targetParent = pathParts[pathParts.length - 1]; // ex: image8.png
+
+                boolean added = false;
+                for (Tree tree : trees) {
+                    if (addNodeToParent(tree, targetParent, newNode)) {
+                        added = true;
+                        break;
+                    }
+                }
+
+                if (!added) {
+                    return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Parent not found in tree");
+                }
+            } else {
+                trees.add(newNode);
+            }
+
+            // Scrie JSON-ul înapoi
+            objectMapper.writerWithDefaultPrettyPrinter().writeValue(jsonFilePath.toFile(), trees);
+
             return ResponseEntity.ok("Image uploaded successfully");
+
         } catch (IOException e) {
+            e.printStackTrace();
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Upload failed");
         }
     }
 
-    //getting all images
+
+    // Helper method to add a node to the correct parent
+    private boolean addNodeToParent(Tree current, String targetPath, Tree newNode) {
+        if (current.getPath().equals(targetPath)) {
+            current.getChildren().add(newNode);
+            return true;
+        }
+        for (Tree child : current.getChildren()) {
+            if (addNodeToParent(child, targetPath, newNode)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
     public ResponseEntity<Map<String, String>> getAllImagesFromJsonRoots() {
         try {
-            // Citește JSON-ul cu arborele (presupunem calea fișierului)
             Path jsonPath = Paths.get("drawings.json");
-            ObjectMapper mapper = new ObjectMapper();
 
-            // Deserializează JSON-ul într-o listă de Tree (root nodes)
+            if (!Files.exists(jsonPath) || Files.size(jsonPath) == 0) {
+                // Dacă fișierul nu există sau e gol, returnează map gol
+                return ResponseEntity.ok(new HashMap<>());
+            }
+
+            ObjectMapper mapper = new ObjectMapper();
             List<Tree> roots = mapper.readValue(jsonPath.toFile(), new TypeReference<List<Tree>>() {});
 
             Map<String, String> images = new HashMap<>();
 
-            // Pentru fiecare nod root, încarcă imaginea aferentă (presupunem că path-ul este numele imaginii)
             for (Tree root : roots) {
                 String imagePathStr = "src/main/resources/assets/" + root.getPath();
                 Path imagePath = Paths.get(imagePathStr);
@@ -74,6 +147,7 @@ public class DrawingRepo {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null);
         }
     }
+
 
 
     public Map<String, String> getImagesFromSelectedRoot(Tree selectedRoot) {
@@ -121,6 +195,8 @@ public class DrawingRepo {
             // 3. Parcurge arborele si extrage imaginile
             Map<String, String> images = new HashMap<>();
             collectImages(selectedRoot, images);
+
+
 
             return ResponseEntity.ok(images);
         } catch (IOException e) {

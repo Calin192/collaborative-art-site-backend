@@ -17,8 +17,8 @@ public class DrawingController {
     @Autowired
     private DrawingService drawingService;
     @PostMapping("/upload")
-    public ResponseEntity<String> uploadImage(@RequestParam("image") MultipartFile file) {
-        return drawingService.uploadImage(file);
+    public ResponseEntity<String> uploadImage(@RequestParam("image") MultipartFile file, @RequestParam String parentPath) {
+        return drawingService.uploadImage(file, parentPath);
     }
 
     @GetMapping("/getAllImages")
