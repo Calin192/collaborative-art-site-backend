@@ -1,0 +1,65 @@
+[ {
+  "path" : "P0.png",
+  "drawing" : {
+    "name" : "Image Name",
+    "username" : "Username",
+    "description" : "Description"
+  },
+  "children" : [ {
+    "path" : "po1.png",
+    "drawing" : {
+      "name" : "Image Name",
+      "username" : "Username",
+      "description" : "Description"
+    },
+    "children" : [ {
+      "path" : "poop2.png",
+      "drawing" : {
+        "name" : "Image Name",
+        "username" : "Username",
+        "description" : "Description"
+      },
+      "children" : [ ]
+    }, {
+      "path" : "pop3.png",
+      "drawing" : {
+        "name" : "Image Name",
+        "username" : "Username",
+        "description" : "Description"
+      },
+      "children" : [ ]
+    } ]
+  }, {
+    "path" : "pen4.png",
+    "drawing" : {
+      "name" : "Image Name",
+      "username" : "Username",
+      "description" : "Description"
+    },
+    "children" : [ {
+      "path" : "penis5.png",
+      "drawing" : {
+        "name" : "Image Name",
+        "username" : "Username",
+        "description" : "Description"
+      },
+      "children" : [ {
+        "path" : "omg7.png",
+        "drawing" : {
+          "name" : "Image Name",
+          "username" : "Username",
+          "description" : "Description"
+        },
+        "children" : [ ]
+      } ]
+    }, {
+      "path" : "pencil6.png",
+      "drawing" : {
+        "name" : "Image Name",
+        "username" : "Username",
+        "description" : "Description"
+      },
+      "children" : [ ]
+    } ]
+  } ]
+} ]
