@@ -40,12 +40,12 @@ public class DrawingServiceTest {
         MultipartFile mockFile = mock(MultipartFile.class);
         ResponseEntity<String> mockResponse = ResponseEntity.ok("Image uploaded");
 
-        when(drawingRepo.add(mockFile,null)).thenReturn(mockResponse);
+        when(drawingRepo.add(mockFile,null,null,null,null)).thenReturn(mockResponse);
 
-        ResponseEntity<String> response = drawingService.uploadImage(mockFile,null);
+        ResponseEntity<String> response = drawingService.uploadImage(mockFile,null, null, null, null);
 
         assertEquals("Image uploaded", response.getBody());
-        verify(drawingRepo, times(1)).add(mockFile,null);
+        verify(drawingRepo, times(1)).add(mockFile,null,null,null,null);
     }
 
     @Test

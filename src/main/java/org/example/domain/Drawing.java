@@ -4,15 +4,15 @@ import java.util.List;
 
 public class Drawing {
     private String name;
-    private String username;
+    private List<String> username;
     private String description;
-
+    private List<String> pendingRequests;
 
     public Drawing() {
 
     }
 
-    public Drawing(String name, String username, String description) {
+    public Drawing(String name, List<String> username, String description) {
         this.name = name;
         this.username = username;
         this.description = description;
@@ -26,11 +26,11 @@ public class Drawing {
         this.name = name;
     }
 
-    public String getUsername() {
+    public List<String> getUsername() {
         return username;
     }
 
-    public void setUsername(String username) {
+    public void setUsername(List<String> username) {
         this.username = username;
     }
 
@@ -43,4 +43,10 @@ public class Drawing {
     }
 
 
+    public List<String> getPendingRequests() {
+        return pendingRequests;
+    }
+    public void setPendingRequests(List<String> pendingRequests) {
+        this.pendingRequests = pendingRequests;
+    }
 }

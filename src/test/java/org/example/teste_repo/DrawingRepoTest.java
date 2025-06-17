@@ -67,7 +67,7 @@ public class DrawingRepoTest {
             filesMock.when(() -> Files.createDirectories(any()))
                     .thenThrow(new IOException("Simulated IO Exception"));
 
-            ResponseEntity<String> response = drawingRepo.add(mockFile, null);
+            ResponseEntity<String> response = drawingRepo.add(mockFile, null,null,null,null);
 
             assertEquals(HttpStatus.INTERNAL_SERVER_ERROR, response.getStatusCode());
             assertEquals("Upload failed", response.getBody());

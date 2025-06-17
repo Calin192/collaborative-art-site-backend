@@ -2,7 +2,7 @@ package org.example.domain;
 
 public class User {
     private String username;
-    private String password; // Store as plain text for simplicity (use hashing in real apps)
+    private String password;
 
     public User() {}
 

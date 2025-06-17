@@ -1,26 +1,36 @@
 package org.example.domain;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
 public class Tree {
+    private LocalDateTime createdAt;
     private String path;
     private Drawing drawing;
     private List<Tree> children;
 
-    // Constructor fara parametri - obligatoriu pentru JSON
+
     public Tree() {
         this.children = new ArrayList<>();
         this.drawing = null;
     }
 
     public Tree(String path) {
+        this.createdAt = LocalDateTime.now();
         this.path = path;
         this.drawing = null;
         this.children = new ArrayList<>();
     }
 
-    // Getter și setter pentru path
+    public LocalDateTime getCreatedAt() {
+        return createdAt;
+    }
+
+    public void setCreatedAt(LocalDateTime createdAt) {
+        this.createdAt = createdAt;
+    }
+
     public String getPath() {
         return path;
     }
@@ -29,7 +39,7 @@ public class Tree {
         this.path = path;
     }
 
-    // Getter și setter pentru drawing
+
     public Drawing getDrawing() {
         return drawing;
     }
@@ -38,7 +48,7 @@ public class Tree {
         this.drawing = drawing;
     }
 
-    // Getter și setter pentru children
+
     public List<Tree> getChildren() {
         return children;
     }
@@ -47,7 +57,7 @@ public class Tree {
         this.children = children;
     }
 
-    // Metoda addChild rămâne opțională
+
     public void addChild(Tree child) {
         children.add(child);
     }
