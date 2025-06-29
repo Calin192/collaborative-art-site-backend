@@ -4,6 +4,7 @@ import org.example.domain.User;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.example.repo.UserRepo;
+import org.example.utils.CryptoUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -18,6 +19,7 @@ public class UserService {
     @Autowired
     private UserRepo userRepo;
     private final ObjectMapper objectMapper = new ObjectMapper();
+    private static final int CHEIE = 3;
 
 
     public List<User> getUsers() {
@@ -28,6 +30,8 @@ public class UserService {
         userRepo.saveUsers(users);
     }
 
+
+
     public boolean registerUser(User newUser) {
         List<User> users = getUsers();
         for (User user : users) {
@@ -35,6 +39,10 @@ public class UserService {
                 return false;
             }
         }
+
+        String parolaCriptata = CryptoUtils.criptare(newUser.getPassword(), CHEIE);
+        newUser.setPassword(parolaCriptata);
+
         users.add(newUser);
         saveUsers(users);
         return true;
@@ -45,9 +53,14 @@ public class UserService {
 
         List<User> users = getUsers();
         if (users == null || users.isEmpty()) return false;
+
+        String parolaCriptata = CryptoUtils.criptare(password, CHEIE);
+
         return users.stream()
-                .anyMatch(user -> username.equals(user.getUsername()) && password.equals(user.getPassword()));
+                .anyMatch(user -> username.equals(user.getUsername()) &&
+                        parolaCriptata.equals(user.getPassword()));
     }
+
 
 
 }
