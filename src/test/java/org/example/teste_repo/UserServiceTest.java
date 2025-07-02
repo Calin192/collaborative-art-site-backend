@@ -3,6 +3,7 @@ package org.example.teste_repo;
 import org.example.domain.User;
 import org.example.repo.UserRepo;
 import org.example.service.UserService;
+import org.example.utils.CryptoUtils;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
@@ -24,7 +25,6 @@ public class UserServiceTest {
         userRepo = mock(UserRepo.class);
         userService = new UserService();
 
-        // bag mock-ul userRepo in userService folosind reflectie
         Field field = UserService.class.getDeclaredField("userRepo");
         field.setAccessible(true);
         field.set(userService, userRepo);
@@ -82,13 +82,17 @@ public class UserServiceTest {
 
     @Test
     public void testLoginUserSuccess() {
+        int CHEIE = 3;
         List<User> users = new ArrayList<>();
-        users.add(new User("user1", "pass1"));
+        String parolaCriptata = CryptoUtils.criptare("pass1", CHEIE);
+        users.add(new User("user1", parolaCriptata));
+
         when(userRepo.getUsers()).thenReturn(users);
 
         boolean result = userService.loginUser("user1", "pass1");
         assertTrue(result);
     }
+
 
     @Test
     public void testLoginUserFail_WrongPassword() {
