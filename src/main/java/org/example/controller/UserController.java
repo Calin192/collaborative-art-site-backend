@@ -10,7 +10,7 @@ import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/auth")
-@CrossOrigin(origins = "*") // Allow frontend requests
+//@CrossOrigin(origins = "*") // Allow frontend requests
 public class UserController {
     @Autowired
     private UserService userService;
