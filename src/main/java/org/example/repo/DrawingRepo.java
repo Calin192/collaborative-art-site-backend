@@ -22,6 +22,8 @@ import java.time.LocalDateTime;
 import java.util.*;
 
 import static org.example.utils.AssetsUtils.countImagesInAssets;
+import org.example.DrawingObservable;
+import org.example.DrawingEvent;
 
 @Repository
 public class DrawingRepo {
@@ -98,6 +100,8 @@ public class DrawingRepo {
             }
 
             objectMapper.writerWithDefaultPrettyPrinter().writeValue(jsonFilePath.toFile(), trees);
+            // notify observers that a drawing was created
+            DrawingObservable.getInstance().notifyEvent(new DrawingEvent(DrawingEvent.EventType.CREATED, filename, imageName, null, null));
 
             return ResponseEntity.ok("Image uploaded successfully");
 
@@ -263,6 +267,8 @@ public class DrawingRepo {
             }
 
             mapper.writerWithDefaultPrettyPrinter().writeValue(jsonPath.toFile(), roots);
+            // notify observers that access was requested
+            DrawingObservable.getInstance().notifyEvent(new DrawingEvent(DrawingEvent.EventType.REQUESTED, drawingPath, null, requester, null));
             return ResponseEntity.ok("Request sent");
 
         } catch (IOException e) {
@@ -359,6 +365,8 @@ public class DrawingRepo {
 
         if (updated) {
             mapper.writerWithDefaultPrettyPrinter().writeValue(jsonPath.toFile(), roots);
+            // notify observers that a request was responded to
+            DrawingObservable.getInstance().notifyEvent(new DrawingEvent(DrawingEvent.EventType.RESPONDED, null, drawingName, fromUser, accept));
         } else {
             throw new RuntimeException("Drawing not found");
         }
